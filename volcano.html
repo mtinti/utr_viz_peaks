@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zoomable Plot with Tooltips </title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans:400,700" rel="stylesheet">
+    <link rel="stylesheet" href="volcano.css">
+    <script src="volcano.js"></script>
+</head>
+<body>
+<button id="resetBtn">Reset</button>
+
+<div id="chart_bsf">
+
+<div id="chart_pcf">
+</div>
+
+<script>
+    var yLabel = 'log<tspan baseline-shift="sub">2</tspan>Fold-change',
+        xLabel = 'log<tspan baseline-shift="sub">10</tspan>CPM',
+        file = "data/selection.csv";
+
+    var volcanoPlotBSF = volcanoPlot()
+        .xAxisLabel(xLabel)
+        .yAxisLabel(yLabel)
+        .foldChangeThreshold(2.0)
+        .sampleID("peak_id")
+        .xColumn("logCPM")
+        .yColumn("BSF_logFC")
+        .folder_images("fig_bsf");
+
+    var volcanoPlotPCF= volcanoPlot()
+        .xAxisLabel(xLabel)
+        .yAxisLabel(yLabel)
+        .foldChangeThreshold(2.0)
+        .sampleID("peak_id")
+        .xColumn("logCPM")
+        .yColumn("PCF_logFC")
+        .folder_images("fig_pcf");
+
+
+    d3.csv(file, parser, function(error, data){
+        if (error) console.log(error);
+
+        d3.select('#chart_bsf')
+            .data([data])
+            .call(volcanoPlotBSF);
+
+        d3.select('#chart_pcf')
+            .data([data])
+            .call(volcanoPlotPCF);
+
+
+            
+
+    });
+
+
+
+
+    // row parser to convert key values into numbers if possible
+    function parser(d) {
+        for (var key in d) {
+            if (d.hasOwnProperty(key)) {
+                d[key] = numberParser(d[key]);
+            }
+        }
+        return d;
+    }
+
+    // function to turn string into number if possible
+    function numberParser(value){
+        return (+value) ? +value : value;
+    }
+
+</script>
+
+</body>
+</html>
